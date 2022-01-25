@@ -102,7 +102,8 @@ def validate_inner_ships_area(board, row, col): # col,row !=0 and col,row !=4
     down = row + 1
     left = col - 1
     right = col + 1
-    if board[up][col] == '0' and board[down][col] == '0' and board[row][left] == '0' and board[row][right] == '0':
+    if board[up][col] == '0' and board[down][col] == '0' \
+        and board[row][left] == '0' and board[row][right] == '0':
          return True
     else: return False
 
@@ -133,47 +134,59 @@ def validate_40_corner_ships_area(board):
 # ------- WALL SHIPS--------
 
 # 0.1, 0.2, 0.3  upper board -- free? [0.0,0.2,1.1], [0.1,0.3,1.2], [0.2,0.4,1.3]
-def validate_upper_wall_ships(board):
-    first = board[0][0] ==  board[0][2] ==  board[1][1] == '0'
-    second = board[0][1] == board[0][3] == board[1][2]  == '0'
-    third = board[0][2] == board[0][4] == board[1][3] == '0'
-    print(first, second, third)
-    if first and second and third:
-        return True
-    else: return False
+def validate_upper_wall_ships(board, row, col):
+    if row == 0 and col == 1:
+        first = board[0][0] ==  board[0][2] ==  board[1][1] == '0'
+        return first
+    elif row == 0 and col == 2:
+        second = board[0][1] == board[0][3] == board[1][2]  == '0'
+        return second
+    elif row == 0 and col == 3:
+        third = board[0][2] == board[0][4] == board[1][3] == '0'
+        return third
   
 
 
 #  1.0,2.0,3.0   left board -- free? [0.0,1.1,2.0], [1.0,2.1,3.0], [2.0,3.1,4.0]
-def validate_left_wall_ships(board):
-    first = board[0][0] == '0' and board[1][1] == '0' and board[2][0]
-    second = board[1][0] == '0' and board[2][1] == '0' and board[3][0]
-    third = board[2][0] == '0' and board[3][1] == '0' and board[4][0]
-    if first and second and third:
-        return True
-    else: return False
+def validate_left_wall_ships(board, row, col):
+    if row == 1 and col == 0:
+        first = board[0][0] == board[1][1] ==  board[2][0] == '0'
+        return first
+    if row == 2 and col == 0:
+        second = board[1][0] == board[2][1] == board[3][0] == '0'
+        return second
+    if row == 3 and col == 0:
+        third = board[2][0] == board[3][1] ==  board[4][0] == '0'
+        return third
+
         
 
-
 # 4.1, 4.2, 4.3  bottom board -- free? [4.0, 3.1, 4.2], [4.1,3.2,4.3], [4.2, 3.3, 4.4]
-def validate_bottom_wall_ships(board):
-    first = board[4][0] == '0' and board[3][1] == '0' and board[4][2]
-    second = board[4][1] == '0' and board[3][2] == '0' and board[4][3]
-    third =  board[4][2] == '0' and board[3][3] == '0' and board[4][4]
-    if first and second and third:
-        return True
-    else: return False
+def validate_bottom_wall_ships(board, row, col):
+    if row == 1 and col == 1:
+        first = board[4][0] ==  board[3][1] == board[4][2] == '0'
+        return first
+    if row == 4 and col == 2:
+        second = board[4][1] == board[3][2] == board[4][3] == '0'
+        return second
+    if row == 4 and col == 3:
+        third =  board[4][2] == board[3][3] == board[4][4] == '0'
+        return third
 
 
 
 # 1.4, 2.4, 3.4 right board -- free? [0.4, 1.3, 2.4], [1.4, 2.3, 3.4], [2.4, 3.3, 4.4]
-def validate_right_wall_ships(board):
-    first = board[0][4] == '0' and board[1][3] == '0' and board[2][4]
-    second = board[1][4] == '0' and board[2][3] == '0' and board[3][4]
-    third = board[2][4] == '0' and board[3][3] == '0' and board[4][4]
-    if first and second and third:
-        return True
-    else: return False
+def validate_right_wall_ships(board, row, col):
+    if row == 1 and col == 4:
+        first = board[0][4] == board[1][3] ==  board[2][4] == '0'
+        return first
+    if row == 2 and col == 4:
+        second = board[1][4] == board[2][3] == board[3][4] == '0'
+        return second
+    if row == 3 and col == 4:
+        third = board[2][4] == board[3][3] == board[4][4] == '0'
+        return third
+   
 
 
 
@@ -183,7 +196,7 @@ def validate_and_place_inner(board, row, col):
     is_validate_area = validate_inner_ships_area(board, row, col)
     is_validate_empty = validate_is_empty(board, row, col)
     if is_validate_area and is_validate_empty:
-        player1_b[row][col] = bcolors.Blue + "X" + bcolors.ENDC
+        board[row][col] = bcolors.Blue + "X" + bcolors.ENDC
         print_board(board)
     else:
         print(bcolors.WARNING + 'you can\'t place your ship here' + bcolors.ENDC)
@@ -210,24 +223,9 @@ def validate_and_place_wall_ships(valid_wall, board, row, col):
         board[row][col] = bcolors.Blue + "X" + bcolors.ENDC
         print_board(board)
     else:
-        print(bcolors.WARNING + '0wall you can\'t place your ship here' + bcolors.ENDC)
+        print(bcolors.WARNING + 'you can\'t place your ship here' + bcolors.ENDC)
         return placing_ships(board)
 
-# ----- validators -----
-
-corner_validators = [
-    validate_00_corner_ships_area(player1_b), 
-    validate_04_corner_ships_area(player1_b), 
-    validate_40_corner_ships_area(player1_b), 
-    validate_44_corner_ships_area(player1_b)
-    ]
-
-wall_validators = [
-    validate_upper_wall_ships(player1_b), 
-    validate_left_wall_ships(player1_b), 
-    validate_bottom_wall_ships(player1_b), 
-    validate_right_wall_ships(player1_b)
-    ]
 
 
 
@@ -239,12 +237,14 @@ player2_ship_2 = 2
 
 
 def placing_ships(player1_b):
+
     global player1_ship_1
     global player1_ship_2
     print_board(player1_b)   
     lenght = get_length()
     direction = get_direction()
     while player1_ship_1 > 0:
+   
         if lenght == 1:
             row, col = get_coordinates_ship(player1_b)
             # if it's inner ship
@@ -254,38 +254,39 @@ def placing_ships(player1_b):
 
             # if it's in corner 
             elif row == 0 and col == 0:
-                validate_and_place_corner_ships(corner_validators[0], player1_b, row, col)
+                validate_and_place_corner_ships(validate_00_corner_ships_area(player1_b), player1_b, row, col)
                 player1_ship_1-=1
 
             elif row == 0 and col == 4:
-                validate_and_place_corner_ships(corner_validators[1],player1_b, row, col)
+                validate_and_place_corner_ships(validate_04_corner_ships_area(player1_b),player1_b, row, col)
                 player1_ship_1-=1
 
             elif row == 4 and col == 0:
-                validate_and_place_corner_ships(corner_validators[2],player1_b, row, col)
+                validate_and_place_corner_ships(validate_40_corner_ships_area(player1_b),player1_b, row, col)
                 player1_ship_1-=1
                
             elif row == 4 and col == 4:
-                validate_and_place_corner_ships(corner_validators[3],player1_b, row, col)
+                validate_and_place_corner_ships(validate_44_corner_ships_area(player1_b),player1_b, row, col)
                 player1_ship_1-=1
 
             # -- upper board
             elif row == 0 and (col == 1 or col == 2 or col == 3):
-                validate_and_place_wall_ships(wall_validators[0],player1_b, row, col)
+                validate_and_place_wall_ships(validate_upper_wall_ships(player1_b, row, col),player1_b, row, col)
                 player1_ship_1-=1
             # -- left board
             elif col == 0 and (row == 1 or row == 2 or row == 3):
-                validate_and_place_wall_ships(wall_validators[1],player1_b, row, col)
+                validate_and_place_wall_ships(validate_left_wall_ships(player1_b, row, col),player1_b, row, col)
                 player1_ship_1-=1
             # -- bottom board
             elif row == 4 and (col == 1 or col == 2 or col == 3):
-                validate_and_place_wall_ships(wall_validators[2],player1_b, row, col)
+                validate_and_place_wall_ships(validate_bottom_wall_ships(player1_b, row, col),player1_b, row, col)
                 player1_ship_1-=1
             # -- right board
-            elif col == 0 and (row == 1 or row == 2 or row == 3):
-                validate_and_place_wall_ships(wall_validators[3],player1_b, row, col)
+            elif col == 4 and (row == 1 or row == 2 or row == 3):
+                validate_and_place_wall_ships(validate_right_wall_ships(player1_b, row, col),player1_b, row, col)
                 player1_ship_1-=1
-
+            
+    
            
 
                     
