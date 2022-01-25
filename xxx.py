@@ -288,15 +288,43 @@ def placing_ships(player1_b):
 
            
 
-                    
+# player_1_ship_1 = ['A1', 'C3'] 
+# player_1_ship_2 = [['A2', 'A3'], ['B1','C1']]
+# for i in range(len(player_1_ship_2)):
+#    for j in range(len(player_1_ship_2[i])):
+    # if coordinate in player_1_ship2[i]:
+    #    if player_1_ship2[i][j] == 'H':
+    #       player_1_ship2[i] = ['S', 'S']     
+    #    else:
+    #    player_1_ship_2[i][j] = 'H'
+#                  
 
-
-
+def validate_shoot(board, coordinate):C2 2 1 
+    coords_letters = {'A':0, 'B':1, 'C':2, 'D':3, 'E':4}
+    coords_numbers = {'1':0, '2':1, '3':2, '4':3, '5':4}
+    translate_row = coords_letters[coordinate[0]]
+    translate_col = coords_numbers[coordinate[1]]
+    if (board[translate_row][translate_col -1] == '0' and board[translate_row][translate_row +1] == '0' and board[translate_row-1][translate_col] == '0' and board[translate_row +1][translate_col] == '0') or \
+    (board[translate_row][translate_col -1] == 'H' or board[translate_row][translate_row +1] == 'H' or board[translate_row-1][translate_col] == 'H' or board[translate_row +1][translate_col] == 'H'):
+        board[translate_row][translate_col] = 'S'
+        if 'H' in board[translate_row][translate_col] or board[translate_row][translate_row +1] or board[translate_row-1][translate_col] or board[translate_row +1][translate_col]:
             
+    
+    
+
     
 
 
-def shooting():
+def shooting(board):
+    #while coord not valid:
+        #coordinate = input('gimme coord')
+        #validate_coord(coordinate)
+    #if board[row][col] == '0':
+    #   board[row][col] = 'M'
+    #   print('Miss!')
+    #elif board[row][col] == 'X':
+    #   board[row][col] = 'H'
+    #   print('')
     pass
 
 

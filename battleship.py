@@ -52,6 +52,7 @@ def get_direction():
     except ValueError:
         return get_direction()
 
+
 def get_length():
     len = ['1', '2']
     try:
@@ -105,3 +106,65 @@ def get_coordinates_ship1(board):
     
 # print(get_coordinates_ship1(player1_board))
 print(get_length())
+
+
+
+
+def validate_grid_and_place_ship(board, row, col, dir, len, start_row, end_row, start_col, end_col):
+    # check the row or col to see if it is safe to place a ship there
+    # return true or false
+
+
+    all_valid = True
+    for r in range(start_row, end_row):
+        for c in range(start_col, end_col):
+            if board[row][col] != '0':
+                all_valid = False
+                break
+    if all_valid:
+      
+        for r in range(start_row, end_row):
+            for c in range(start_col, end_col):
+                if dir == 'H' and len == 2:
+                    board[row][col] = bcolors.Blue + "X" + bcolors.ENDC
+                    board[row][col+1] = bcolors.Blue + "X" + bcolors.ENDC
+                elif dir == 'V' and len == 2:
+                    board[row][col] = bcolors.Blue + "X" + bcolors.ENDC
+                    board[row+1][col] = bcolors.Blue + "X" + bcolors.ENDC
+                else:
+                    board[row][col] = bcolors.Blue + "X" + bcolors.ENDC
+                print_board(board)
+
+    return all_valid
+
+    
+
+
+def try_to_place_ship(row, col, direction, length):
+    grid_size = 5
+    # based on dir will call a helper method to try and place the ship
+    # returns validate_grid... which will be true or false
+
+    start_row, end_row, start_col, end_col = row, row + 1, col, col + 1 # A5--- > 0 1 4 5
+   
+    if direction == 'H':
+        if col + length > grid_size:
+            print('too long')
+            return False
+        start_col = col - length + 1
+        end_col = col + length
+        
+        print('ok')
+    elif direction == 'V':
+        if row + length > grid_size:
+            print('too long')
+            return False
+        start_row = row - length + 1
+        end_row = row + length
+        print('ok')
+
+    return validate_grid_and_place_ship(player1_board, row_coord, column_coord, direction, int(length), start_row, end_row, start_col, end_col)
+
+
+
+# print(try_to_place_ship(row_coord, column_coord, direction, int(length)))
