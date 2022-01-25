@@ -10,17 +10,16 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
-player1_board = [['0']*5 for x in range(5)]
+board =  [['0']*5 for x in range(5)]
+player1_b = [['0']*5 for x in range(5)]
+player2_b = [['0']*5 for x in range(5)]
+player1_hidden_b = [['0']*5 for x in range(5)]
+player2_hidden_b = [['0']*5 for x in range(5)]
 
 
-def custom_boards():
-    pass
 
 
-def menu():
-    pass
-
-
+# when placing ships
 def print_board(board):
     print(bcolors.BOLD + '  | 1 2 3 4 5' + bcolors.ENDC)
     print('--------------')
@@ -30,6 +29,8 @@ def print_board(board):
         ch = chr(ord(ch) + 1)
 
 
+
+# when the play starts
 def print_board_yield(board):
     yield(bcolors.BOLD + '  | 1 2 3 4 5' + bcolors.ENDC)
     yield('--------------')
@@ -38,9 +39,9 @@ def print_board_yield(board):
         yield(f"{bcolors.BOLD}{ch}{bcolors.ENDC} | {' '.join(row)}")
         ch = chr(ord(ch) + 1)
 
-print_board(player1_board)
 
 
+# if V, return with start-row + 1 --> end row
 def get_direction():
     dir = ['V', 'H']
     try:
@@ -50,7 +51,10 @@ def get_direction():
         else:
             return get_direction()
     except ValueError:
+        print(bcolors.WARNING + 'Please choose between V or H' + bcolors.ENDC) 
         return get_direction()
+
+
 
 def get_length():
     len = ['1', '2']
@@ -61,47 +65,264 @@ def get_length():
         else:
             return get_length()
     except ValueError:
+        print(bcolors.WARNING + 'Please choose between 1 or 2' + bcolors.ENDC)
         return get_length()
 
 
-def get_coordinates_ship1(board):
-    coords_letters = {
-        'A' : 0,
-        'B' : 1,
-        'C' : 2,
-        'D' : 3,
-        'E' : 4,
-    }
-    coords_numbers = {
-        '1' : 0,
-        '2' : 1,
-        '3' : 2,
-        '4' : 3,
-        '5' : 4
-    }
 
-    # ship_1 = 3
-    # ship_2 = 2
-    count = 1
+
+def get_coordinates_ship(board):
+    coords_letters = {'A':0, 'B':1, 'C':2, 'D':3, 'E':4}
+    coords_numbers = {'1':0, '2':1, '3':2, '4':3, '5':4}
+
     try:
-        while count > 0:
-            row, column = input('give me a coordinate (A,B,C,D,E--1,2,3,4,5): ').upper()
-            if row in coords_letters and column in coords_numbers:
-                if board[coords_letters[row]][coords_numbers[column]] == '0':
-                    count -= 1
-                    # board[coords_letters[row]][coords_numbers[column]] = bcolors.Blue + "X" + bcolors.ENDC
-                    return coords_letters[row], coords_numbers[column]
-                else:
-                    print('this space has already taken, choose another one')
-                    return get_coordinates_ship1(board)
-            else:
-                print(bcolors.WARNING + 'wrong value, give me valid value' + bcolors.ENDC) # ha nincs a megadott értékek között
-                return get_coordinates_ship1(board)
+        row, column = input('give me a coordinate (A,B,C,D,E--1,2,3,4,5): ').upper()
+        if row in coords_letters and column in coords_numbers:
+            return coords_letters[row], coords_numbers[column]
+        else:
+            print(bcolors.WARNING + 'invalid input' + bcolors.ENDC) 
+            return get_coordinates_ship(board)
     except ValueError:
-        print(bcolors.WARNING + 'invalid input!' + bcolors.ENDC) # ha pl több, mint 3 karakter az input
-        return get_coordinates_ship1(board)
+        print(bcolors.WARNING + 'invalid input!' + bcolors.ENDC) 
+        return get_coordinates_ship(board)
 
+# start_point_row, start_point_col = get_coordinates_ship(board)
+# print(start_point_row, start_point_col)
+
+
+
+
+# field validation 
+
+def validate_is_empty(board, row, col):
+    if board[row][col] == '0': return True
+    else: return False
+
+
+def validate_inner_ships_area(board, row, col): # col,row !=0 and col,row !=4
+    up = row - 1
+    down = row + 1
+    left = col - 1
+    right = col + 1
+    if board[up][col] == '0' and board[down][col] == '0' and board[row][left] == '0' and board[row][right] == '0':
+         return True
+    else: return False
+
+
+ # 0.0, 4.4, 0.4, 4.0 -> free? [0.1,1.0], [3.4,4.3], [0.3,1.4], [3.0, 4.1]
+def validate_00_corner_ships_area(board):
+    if board[0][1] == '0' and board[1][0] == '0':return True
+    else: return False
+    
+
+def validate_44_corner_ships_area(board): 
+    if board[3][4] == '0' and board[4][3] == '0':return True
+    else: return False
 
     
-# print(get_coordinates_ship1(player1_board))
-print(get_length())
+def validate_04_corner_ships_area(board):
+    if board[0][3] == '0' and board[1][4] == '0':return True
+    else: return False
+
+    
+def validate_40_corner_ships_area(board): 
+    if board[3][0] == '0' and board[4][1] == '0':return True
+    else: return False
+    
+
+
+# 0.1, 0.2, 0.3 -- free? [0.0,0.2,1.1], [0.1,0.3,1.2], [0.2,0.4,1.3]
+def validate_0_wall_ships(board, row, col):
+    if row == 0 and col == 1:
+        if board[0][0] == '0' and board[0][2] == '0' and board[1][1]:return True
+        else: return False
+    if row == 0 and col == 2:
+        if board[0][1] == '0' and board[0][3] == '0' and board[1][2]:return True
+        else: return False
+    if row == 0 and col == 3:
+        if board[0][2] == '0' and board[0][4] == '0' and board[1][3]:return True
+        else: return False
+
+
+
+
+
+
+
+
+
+
+
+player1_ship_1 = 3
+player1_ship_2 = 2
+
+player2_ship_1 = 3
+player2_ship_2 = 2
+
+
+def placing_ships(player1_b):
+    global player1_ship_1
+    global player1_ship_2
+    print_board(player1_b)   
+    lenght = get_length()
+    direction = get_direction()
+    while player1_ship_1 > 0:
+        if lenght == 1:
+            row, col = get_coordinates_ship(player1_b)
+            # if it's not on the wall
+            # place the 1 block ships that are not next to wall, ask new input if it is on wall, stop running if 3 ships are placed
+            if row != 0 and row != 4 and col !=0 and col!=4:
+                is_validate_area = validate_inner_ships_area(player1_b, row, col)
+                is_validate_empty = validate_is_empty(player1_b, row, col)
+                if is_validate_area and is_validate_empty:
+                    player1_b[row][col] = bcolors.Blue + "X" + bcolors.ENDC
+                    player1_ship_1-=1
+                    print(f'ship1 count: {str(player1_ship_1)}')
+                    print_board(player1_b)
+                else:
+                    print(bcolors.WARNING + 'you can\'t place your ship here' + bcolors.ENDC)
+                    return placing_ships(player1_b)
+          
+            # if it's in corner 
+             # 0.0, 4.4, 0.4, 4.0 
+            if row == 0 and col == 0:
+                is_corner_valid = validate_00_corner_ships_area(player1_b)
+                is_empty = validate_is_empty(player1_b, row, col)
+                if is_corner_valid and is_empty:
+                    player1_b[row][col] = bcolors.Blue + "X" + bcolors.ENDC
+                    player1_ship_1-=1
+                    print(f'ship1 count corner: {str(player1_ship_1)}')
+                    print_board(player1_b)
+                else:
+                    print(bcolors.WARNING + 'you can\'t place your ship here' + bcolors.ENDC)
+                    return placing_ships(player1_b)
+
+            elif row == 4 and col == 4:
+                is_corner_valid = validate_44_corner_ships_area(player1_b)
+                is_empty = validate_is_empty(player1_b, row, col)
+                if is_corner_valid and is_empty:
+                    player1_b[row][col] = bcolors.Blue + "X" + bcolors.ENDC
+                    player1_ship_1-=1
+                    print(f'ship1 count corner: {str(player1_ship_1)}')
+                    print_board(player1_b)
+                else:
+                    print(bcolors.WARNING + 'you can\'t place your ship here' + bcolors.ENDC)
+                    return placing_ships(player1_b)
+
+            elif row == 0 and col == 4:
+                is_corner_valid = validate_04_corner_ships_area(player1_b)
+                is_empty = validate_is_empty(player1_b, row, col)
+                if is_corner_valid and is_empty:
+                    player1_b[row][col] = bcolors.Blue + "X" + bcolors.ENDC
+                    player1_ship_1-=1
+                    print(f'ship1 count corner: {str(player1_ship_1)}')
+                    print_board(player1_b)
+                else:
+                    print(bcolors.WARNING + 'you can\'t place your ship here' + bcolors.ENDC)
+                    return placing_ships(player1_b)
+
+            elif row == 4 and col == 0:
+                is_corner_valid = validate_40_corner_ships_area(player1_b)
+                is_empty = validate_is_empty(player1_b, row, col)
+                if is_corner_valid and is_empty:
+                    player1_b[row][col] = bcolors.Blue + "X" + bcolors.ENDC
+                    player1_ship_1-=1
+                    print(f'ship1 count corner: {str(player1_ship_1)}')
+                    print_board(player1_b)
+                else:
+                    print(bcolors.WARNING + 'corner you can\'t place your ship here' + bcolors.ENDC)
+                    return placing_ships(player1_b)
+            # 0.1, 0.2, 0.3 -- free? [0.0,0.2,1.1], [0.1,0.3,1.2], [0.2,0.4,1.3]
+            elif row == 0 and col == 1 or col == 2 or col == 3:
+                wall_0_validate = validate_0_wall_ships(player1_b, row,col)
+                is_empty = validate_is_empty(player1_b, row,col)
+                if wall_0_validate and is_empty:
+                    player1_b[row][col] = bcolors.Blue + "X" + bcolors.ENDC
+                    player1_ship_1-=1
+                    print(f'ship1 count corner: {str(player1_ship_1)}')
+                    print_board(player1_b)
+                else:
+                    print(bcolors.WARNING + '0wall you can\'t place your ship here' + bcolors.ENDC)
+                    return placing_ships(player1_b)
+
+                    
+
+
+
+            
+    
+
+
+def shooting():
+    pass
+
+
+
+if __name__ == '__main__':
+    placing_ships(player1_b)
+    # shooting()
+
+
+# placing ships
+
+# player 1 place ships
+
+# 1 block ships = 3
+# 2 block ships = 2
+# board = print_board(player1)
+# length = get the length (1,2) --> return 1 or 2 --> reduce the number of that size ships
+# direction = get_direction (V, H)
+
+# while 1_block > 0 and 2_block > 0:
+
+#       if length == 1:
+#           coords = ask ship1 coords from user
+#           validate coords (if it == '0' and if there are any ship up, down, right, left !out of board range) return true or false
+#           if true 
+#                place the ship on board
+#                1 block -= 
+#           else: ask ship1 coords from user
+#
+#       if length == 2:
+#           start-point-row, start-point-col = ask ship2 coords from user 
+#           grid = 5
+#           validate 2 blocks with 2 functions
+#             if V :
+#                if start-row + length >= grid --> return true or false
+#                   validator1 = if board[start-row][start-col] == '0' and board[start-row + 1][start-col] == '0' --> true or false
+#                   validator2 = if there are any ship up, down, right, left !! out of board range) --> true or false
+#                   if all validators == true:
+#                        place ship
+#                        2 block-=1 
+#                   else:
+#                       print('you can not place here your ship)
+#                       return ask ship2 coords from user
+#                 else:
+#                      print('there is no space to place here your ship')
+#                      return ask ship2 coords from user
+#               
+#             if H :
+#                if start-col + length >= grid:
+#                    validator1 = if board[start-row][start-col] == '0' and board[start-row][start-col + 1] == '0':
+#                    validator2 = if there are any ship up, down, right, left !! out of board range) true or false
+#                    if all validators == true:
+#                       place ship
+#                       2 block-=1
+#                    else:
+#                       print('you can not place here your ship)
+#                       return ask ship2 coords from user
+#                else:
+#                     print('there is no space to place here your ship')
+#                     return ask ship2 coords from user
+
+#  'waiting for the other player (press any button then next player starts placing)
+# 1 block ships = 3
+# 2 block ships = 2
+# print_board(player2)
+# .....
+
+
+# shooting
+# display the two hidden boards
+# 
+
