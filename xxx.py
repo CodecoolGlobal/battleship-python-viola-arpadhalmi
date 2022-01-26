@@ -434,7 +434,10 @@ def main_menu():
     bullet = 0
     if mode == '1':
         while not 5 <= bullet <= 50:
-            bullet = int(input('Choose turn limit (5-50) '))
+            try:
+                bullet = int(input('Choose turn limit (5-50) '))
+            except ValueError:
+                print('Please choose a number between 5-50')
         lets_sink(bullet)
     elif mode == '2':
         lets_ai()
