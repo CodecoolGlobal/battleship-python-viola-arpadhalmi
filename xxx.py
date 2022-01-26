@@ -403,18 +403,18 @@ def check_win(board):
 #     if purple or blue:
 #         return False
 #     else: return True
-demo_board1 = [['0', '0', '0', '0', '0'],
-[bcolors.Blue + 'X' + bcolors.ENDC, '0', '0', '0', '0'],
-['0', '0', '0', bcolors.Purple + 'X' + bcolors.ENDC, bcolors.Purple + 'X' + bcolors.ENDC],
-[bcolors.Blue + 'X' + bcolors.ENDC, '0', '0', '0', '0'],
-['0', '0', '0', bcolors.Purple + 'X' + bcolors.ENDC, bcolors.Purple + 'X' + bcolors.ENDC]
-]
+# demo_board1 = [['0', '0', '0', '0', '0'],
+# [bcolors.Blue + 'X' + bcolors.ENDC, '0', '0', '0', '0'],
+# ['0', '0', '0', bcolors.Purple + 'X' + bcolors.ENDC, bcolors.Purple + 'X' + bcolors.ENDC],
+# [bcolors.Blue + 'X' + bcolors.ENDC, '0', '0', '0', '0'],
+# ['0', '0', '0', bcolors.Purple + 'X' + bcolors.ENDC, bcolors.Purple + 'X' + bcolors.ENDC]
+# ]
 
-demo_board2 = [['0', '0', '0', '0', '0'],
-[bcolors.Blue + 'X' + bcolors.ENDC, '0','0','0','0'],
-['0','0','0',bcolors.Purple + 'X' + bcolors.ENDC,bcolors.Purple + 'X' + bcolors.ENDC],
-[bcolors.Blue + 'X' + bcolors.ENDC,'0','0','0','0'],
-['0','0','0',bcolors.Purple + 'X' + bcolors.ENDC,bcolors.Purple + 'X' + bcolors.ENDC]
+# demo_board2 = [['0', '0', '0', '0', '0'],
+# [bcolors.Blue + 'X' + bcolors.ENDC, '0','0','0','0'],
+# ['0','0','0',bcolors.Purple + 'X' + bcolors.ENDC,bcolors.Purple + 'X' + bcolors.ENDC],
+# [bcolors.Blue + 'X' + bcolors.ENDC,'0','0','0','0'],
+# ['0','0','0',bcolors.Purple + 'X' + bcolors.ENDC,bcolors.Purple + 'X' + bcolors.ENDC]
 ]
 
 
