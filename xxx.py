@@ -1,3 +1,5 @@
+import string
+
 class bcolors:
     Purple = '\033[95m'
     Blue = '\033[94m'
@@ -286,7 +288,13 @@ def placing_ships(player1_b):
                 validate_and_place_wall_ships(wall_validators[3],player1_b, row, col)
                 player1_ship_1-=1
 
-           
+def translate_coords(coordinates, size=5):
+    alphabet = string.ascii_uppercase
+    coords_letters = {letter: i for i, letter in enumerate(alphabet)}
+    coords_numbers = {j+1: j for j in range(size)}
+    translated_row = coords_letters[coordinates[0]]
+    translated_col = coords_numbers[int(coordinates[1])]
+    return translated_row, translated_col
 
 # player_1_ship_1 = ['A1', 'C3'] 
 # player_1_ship_2 = [['A2', 'A3'], ['B1','C1']]
@@ -299,39 +307,51 @@ def placing_ships(player1_b):
     #    player_1_ship_2[i][j] = 'H'
 #                  
 
-def validate_shoot(board, coordinate):C2 2 1 
-    coords_letters = {'A':0, 'B':1, 'C':2, 'D':3, 'E':4}
-    coords_numbers = {'1':0, '2':1, '3':2, '4':3, '5':4}
-    translate_row = coords_letters[coordinate[0]]
-    translate_col = coords_numbers[coordinate[1]]
-    if (board[translate_row][translate_col -1] == '0' and board[translate_row][translate_row +1] == '0' and board[translate_row-1][translate_col] == '0' and board[translate_row +1][translate_col] == '0') or \
-    (board[translate_row][translate_col -1] == 'H' or board[translate_row][translate_row +1] == 'H' or board[translate_row-1][translate_col] == 'H' or board[translate_row +1][translate_col] == 'H'):
-        board[translate_row][translate_col] = 'S'
-        if 'H' in board[translate_row][translate_col] or board[translate_row][translate_row +1] or board[translate_row-1][translate_col] or board[translate_row +1][translate_col]:
-            
-    
-    
+def validate_shoot(board, row, col):
+    if (board[row][col-1] == '0' and board[row][row +1] == '0' and board[row-1][col] == '0' and board[row +1][col] == '0') or \
+    (board[row][col-1] == 'H' or board[row][row +1] == 'H' or board[row-1][col] == 'H' or board[row +1][col] == 'H'):
+        board[row][col] = 'S'
+        if 'H' == board[row][col -1]:
+            board[row][col] = 'S'
+        elif 'H' == board[row][col +1]:
+            board[row][col +1] = 'S'
+        elif 'H' == board[row -1][col]:
+            board[row -1][col] = 'S'
+        elif 'H' == board[row + 1][col]:
+            board[row + 1][col] = 'S'
+        print('You\'ve sunk a ship!')
+    elif (board[row][col-1] == '0' and board[row][row +1] == '0' and board[row-1][col] == '0' and board[row +1][col] == '0') and \
+    (board[row][col-1] == '0' and board[row][row +1] == '0' and board[row-1][col] == '0' or board[row +1][col] == '0'):
+        board[row][col] = 'S'
+        print('You\'ve sunk a ship!')
+    else:
+        board[row][col] = 'H'
+        print('You\'ve hit a ship!')
 
-    
 
 
 def shooting(board):
     #while coord not valid:
-        #coordinate = input('gimme coord')
+    coordinate = input('Where do you want to shoot?\n').upper()
+    row = translate_coords(coordinate)[0]
+    col = translate_coords(coordinate)[1]
         #validate_coord(coordinate)
-    #if board[row][col] == '0':
-    #   board[row][col] = 'M'
-    #   print('Miss!')
-    #elif board[row][col] == 'X':
-    #   board[row][col] = 'H'
-    #   print('')
-    pass
+    if board[row][col] == '0':
+        board[row][col] = 'M'
+        print('You\'ve missed!')
+    elif board[row][col] == 'X':
+        validate_shoot(board, row, col)
 
 
 
 if __name__ == '__main__':
     placing_ships(player1_b)
-    # shooting()
+    while True:
+        print('Player 1 pls shoot')
+        shooting(player1_b)
+        print_board(player1_b)
+    # print('Player 2 pls shoot')
+    # shooting(board, player)
 
 
 # placing ships
